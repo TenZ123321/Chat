@@ -23,6 +23,7 @@ exports.handler = async (event) => {
 
     // Kirim perintah ke Pusher buat sebarin pesan
     await pusher.trigger("my-channel", "my-event", {
+      id: Date.now() + Math.random(), // <--- Tambah baris ini (KTP Pesan)
       nama: nama,
       pesan: pesan
     });

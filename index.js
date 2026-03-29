@@ -3,20 +3,18 @@ const pusher = new Pusher('4ab0a5b2186b6c48de02', {
 });
 const channel = pusher.subscribe('my-channel');
 const wadah = document.getElementById('kotak-chat');
-channel.bind('my-event', function(data) {
-    const namaSaya = document.getElementById('nama-user').value;
-    const tipe = (data.nama === namaSaya) ? 'me' : 'others';
+let pesanDiterima = []; // Buku tamu buat nyatet ID pesan
 
-    wadah.innerHTML += `<div class="bubble ${tipe}"><b>${data.nama}</b>: ${data.pesan}</div>`;
-    wadah.scrollTop = wadah.scrollHeight;
-});
-// 1. Fungsi dengerin pesan dari ORANG LAIN (Real-time)
 channel.bind('my-event', function(data) {
-    // Ambil nama saya buat cek warna bubble (opsional)
-    const namaSaya = document.getElementById('nama-user').value;
+    // 1. Cek KTP pesan (ID) biar gak double
+    if (data.id && pesanDiterima.includes(data.id)) return;
+    if (data.id) pesanDiterima.push(data.id);
+
+    // 2. Ambil nama buat nentuin warna bubble
+    const namaSaya = document.getElementById('nama-user').value.trim();
     const kelasBubble = (data.nama === namaSaya) ? "bubble me" : "bubble others";
 
-    // Cuma satu pintu pembuatan bubble
+    // 3. Pajang pesannya
     wadah.innerHTML += `<div class="${kelasBubble}"><b>${data.nama}</b>: ${data.pesan}</div>`;
     wadah.scrollTop = wadah.scrollHeight;
 });
