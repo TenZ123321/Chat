@@ -8,16 +8,33 @@ const pusher = new Pusher({
   useTLS: true
 });
 
-export default async function handler(req, res) {
-  if (req.method === 'POST') {
-    const { nama, pesan } = req.body;
-    try {
-      await pusher.trigger("my-channel", "my-event", { nama, pesan });
-      res.status(200).json({ success: true });
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  } else {
-    res.status(405).json({ message: "Method not allowed" });
+exports.handler = async (event) => {
+  // Cek kalau ada yang iseng akses bukan pakai POST
+  if (event.httpMethod !== "POST") {
+    return { 
+      statusCode: 405, 
+      body: "Method Gak Boleh!" 
+    };
   }
-}
+
+  try {
+    // Di Netlify, data chat ada di dalam event.body
+    const { nama, pesan } = JSON.parse(event.body);
+
+    // Kirim perintah ke Pusher buat sebarin pesan
+    await pusher.trigger("my-channel", "my-event", {
+      nama: nama,
+      pesan: pesan
+    });
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ status: "Pesan Terkirim!" })
+    };
+  } catch (error) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: error.message })
+    };
+  }
+};
