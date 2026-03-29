@@ -30,7 +30,7 @@ document.getElementById('tombol-kirim').onclick = function() {
         wadah.innerHTML += `<div class="bubble me"><b>${nama}</b>: ${pesan}</div>`;
         wadah.scrollTop = wadah.scrollHeight;
         document.getElementById('isi-pesan').value = "";
-        fetch('/api/send-message', {
+        fetch('/.netlify/functions/send-message', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ nama: nama, pesan: pesan })
