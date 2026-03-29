@@ -12,13 +12,13 @@ channel.bind('my-event', function(data) {
 });
 // 1. Fungsi dengerin pesan dari ORANG LAIN (Real-time)
 channel.bind('my-event', function(data) {
+    // Ambil nama saya buat cek warna bubble (opsional)
     const namaSaya = document.getElementById('nama-user').value;
-    
-    // HANYA tampilkan kalau itu pesan dari orang lain (biar nggak double)
-    if (data.nama !== namaSaya) {
-        wadah.innerHTML += `<div class="bubble others"><b>${data.nama}</b>: ${data.pesan}</div>`;
-        wadah.scrollTop = wadah.scrollHeight;
-    }
+    const kelasBubble = (data.nama === namaSaya) ? "bubble me" : "bubble others";
+
+    // Cuma satu pintu pembuatan bubble
+    wadah.innerHTML += `<div class="${kelasBubble}"><b>${data.nama}</b>: ${data.pesan}</div>`;
+    wadah.scrollTop = wadah.scrollHeight;
 });
 
 // 2. Fungsi Kirim Pesan (Visual Instan + Kirim ke API)
@@ -27,8 +27,6 @@ document.getElementById('tombol-kirim').onclick = function() {
     const pesan = document.getElementById('isi-pesan').value;
 
     if (nama && pesan) {
-        wadah.innerHTML += `<div class="bubble me"><b>${nama}</b>: ${pesan}</div>`;
-        wadah.scrollTop = wadah.scrollHeight;
         document.getElementById('isi-pesan').value = "";
         fetch('/.netlify/functions/send-message', {
             method: 'POST',
